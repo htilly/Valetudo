@@ -1,77 +1,100 @@
-const BasicControlMcpTool = require("./tools/BasicControlMcpTool");
-const CombinedVirtualRestrictionsMcpTool = require("./tools/CombinedVirtualRestrictionsMcpTool");
-const ConsumableMonitoringMcpTool = require("./tools/ConsumableMonitoringMcpTool");
-const CurrentStatisticsMcpTool = require("./tools/CurrentStatisticsMcpTool");
-const DoNotDisturbMcpTool = require("./tools/DoNotDisturbMcpTool");
-const FanSpeedControlMcpTool = require("./tools/FanSpeedControlMcpTool");
-const GoToLocationMcpTool = require("./tools/GoToLocationMcpTool");
-const LocateMcpTool = require("./tools/LocateMcpTool");
-const ManualControlMcpTool = require("./tools/ManualControlMcpTool");
-const MappingPassMcpTool = require("./tools/MappingPassMcpTool");
-const MapResetMcpTool = require("./tools/MapResetMcpTool");
-const MapSegmentationMcpTool = require("./tools/MapSegmentationMcpTool");
-const MapSegmentEditMcpTool = require("./tools/MapSegmentEditMcpTool");
-const MapSegmentRenameMcpTool = require("./tools/MapSegmentRenameMcpTool");
-const MapSnapshotMcpTool = require("./tools/MapSnapshotMcpTool");
-const OperationModeControlMcpTool = require("./tools/OperationModeControlMcpTool");
-const PendingMapChangeHandlingMcpTool = require("./tools/PendingMapChangeHandlingMcpTool");
-const PresetSelectionMcpTool = require("./tools/PresetSelectionMcpTool");
-const QuirksMcpTool = require("./tools/QuirksMcpTool");
-const SimpleToggleMcpTool = require("./tools/SimpleToggleMcpTool");
-const SpeakerVolumeControlMcpTool = require("./tools/SpeakerVolumeControlMcpTool");
-const TotalStatisticsMcpTool = require("./tools/TotalStatisticsMcpTool");
-const VoicePackManagementMcpTool = require("./tools/VoicePackManagementMcpTool");
-const WaterUsageControlMcpTool = require("./tools/WaterUsageControlMcpTool");
-const WifiConfigurationMcpTool = require("./tools/WifiConfigurationMcpTool");
-const WifiScanMcpTool = require("./tools/WifiScanMcpTool");
-const ZoneCleaningMcpTool = require("./tools/ZoneCleaningMcpTool");
+const toolModuleCache = new Map();
+
+function loadToolModule(name) {
+    if (toolModuleCache.has(name)) {
+        return toolModuleCache.get(name);
+    }
+
+    let mod;
+
+    switch (name) {
+        case "BasicControlMcpTool": mod = require("./tools/BasicControlMcpTool"); break;
+        case "CombinedVirtualRestrictionsMcpTool": mod = require("./tools/CombinedVirtualRestrictionsMcpTool"); break;
+        case "ConsumableMonitoringMcpTool": mod = require("./tools/ConsumableMonitoringMcpTool"); break;
+        case "CurrentStatisticsMcpTool": mod = require("./tools/CurrentStatisticsMcpTool"); break;
+        case "DoNotDisturbMcpTool": mod = require("./tools/DoNotDisturbMcpTool"); break;
+        case "FanSpeedControlMcpTool": mod = require("./tools/FanSpeedControlMcpTool"); break;
+        case "GoToLocationMcpTool": mod = require("./tools/GoToLocationMcpTool"); break;
+        case "LocateMcpTool": mod = require("./tools/LocateMcpTool"); break;
+        case "ManualControlMcpTool": mod = require("./tools/ManualControlMcpTool"); break;
+        case "MappingPassMcpTool": mod = require("./tools/MappingPassMcpTool"); break;
+        case "MapResetMcpTool": mod = require("./tools/MapResetMcpTool"); break;
+        case "MapSegmentationMcpTool": mod = require("./tools/MapSegmentationMcpTool"); break;
+        case "MapSegmentEditMcpTool": mod = require("./tools/MapSegmentEditMcpTool"); break;
+        case "MapSegmentRenameMcpTool": mod = require("./tools/MapSegmentRenameMcpTool"); break;
+        case "MapSnapshotMcpTool": mod = require("./tools/MapSnapshotMcpTool"); break;
+        case "OperationModeControlMcpTool": mod = require("./tools/OperationModeControlMcpTool"); break;
+        case "PendingMapChangeHandlingMcpTool": mod = require("./tools/PendingMapChangeHandlingMcpTool"); break;
+        case "PresetSelectionMcpTool": mod = require("./tools/PresetSelectionMcpTool"); break;
+        case "QuirksMcpTool": mod = require("./tools/QuirksMcpTool"); break;
+        case "SimpleToggleMcpTool": mod = require("./tools/SimpleToggleMcpTool"); break;
+        case "SpeakerTestMcpTool": mod = require("./tools/SpeakerTestMcpTool"); break;
+        case "SpeakerVolumeControlMcpTool": mod = require("./tools/SpeakerVolumeControlMcpTool"); break;
+        case "TotalStatisticsMcpTool": mod = require("./tools/TotalStatisticsMcpTool"); break;
+        case "VoicePackManagementMcpTool": mod = require("./tools/VoicePackManagementMcpTool"); break;
+        case "WaterUsageControlMcpTool": mod = require("./tools/WaterUsageControlMcpTool"); break;
+        case "WifiConfigurationMcpTool": mod = require("./tools/WifiConfigurationMcpTool"); break;
+        case "WifiScanMcpTool": mod = require("./tools/WifiScanMcpTool"); break;
+        case "ZoneCleaningMcpTool": mod = require("./tools/ZoneCleaningMcpTool"); break;
+        default: return null;
+    }
+
+    toolModuleCache.set(name, mod);
+
+    return mod;
+}
 
 const CAPABILITY_TYPE_TO_MCP_TOOL_MAPPING = {
-    "BasicControlCapability": BasicControlMcpTool,
-    "FanSpeedControlCapability": FanSpeedControlMcpTool,
-    "WaterUsageControlCapability": WaterUsageControlMcpTool,
-    "OperationModeControlCapability": OperationModeControlMcpTool,
-    "GoToLocationCapability": GoToLocationMcpTool,
-    "ZoneCleaningCapability": ZoneCleaningMcpTool,
-    "MapSegmentationCapability": MapSegmentationMcpTool,
-    "LocateCapability": LocateMcpTool,
-    "ManualControlCapability": ManualControlMcpTool,
-    "HighResolutionManualControlCapability": ManualControlMcpTool,
-    "CombinedVirtualRestrictionsCapability": CombinedVirtualRestrictionsMcpTool,
-    "ConsumableMonitoringCapability": ConsumableMonitoringMcpTool,
-    "CurrentStatisticsCapability": CurrentStatisticsMcpTool,
-    "TotalStatisticsCapability": TotalStatisticsMcpTool,
-    "CarpetModeControlCapability": SimpleToggleMcpTool,
-    "ObstacleAvoidanceControlCapability": SimpleToggleMcpTool,
-    "PetObstacleAvoidanceControlCapability": SimpleToggleMcpTool,
-    "KeyLockCapability": SimpleToggleMcpTool,
-    "CameraLightControlCapability": SimpleToggleMcpTool,
-    "MopExtensionControlCapability": SimpleToggleMcpTool,
-    "MopTwistControlCapability": SimpleToggleMcpTool,
-    "CollisionAvoidantNavigationControlCapability": SimpleToggleMcpTool,
-    "FloorMaterialDirectionAwareNavigationControlCapability": SimpleToggleMcpTool,
-    "PersistentMapControlCapability": SimpleToggleMcpTool,
-    "MopDockMopAutoDryingControlCapability": SimpleToggleMcpTool,
-    "ObstacleImagesCapability": SimpleToggleMcpTool,
-    "CarpetSensorModeControlCapability": PresetSelectionMcpTool,
-    "MapSegmentMaterialControlCapability": PresetSelectionMcpTool,
-    "MopExtensionFurnitureLegHandlingControlCapability": PresetSelectionMcpTool,
-    "CleanRouteControlCapability": PresetSelectionMcpTool,
-    "MapResetCapability": MapResetMcpTool,
-    "MappingPassCapability": MappingPassMcpTool,
-    "MapSnapshotCapability": MapSnapshotMcpTool,
-    "MapSegmentRenameCapability": MapSegmentRenameMcpTool,
-    "MapSegmentEditCapability": MapSegmentEditMcpTool,
-    "PendingMapChangeHandlingCapability": PendingMapChangeHandlingMcpTool,
-    "SpeakerVolumeControlCapability": SpeakerVolumeControlMcpTool,
-    "VoicePackManagementCapability": VoicePackManagementMcpTool,
-    "WifiConfigurationCapability": WifiConfigurationMcpTool,
-    "WifiScanCapability": WifiScanMcpTool,
-    "DoNotDisturbCapability": DoNotDisturbMcpTool,
-    "QuirksCapability": QuirksMcpTool,
-    "AutoEmptyDockManualTriggerCapability": SimpleToggleMcpTool,
-    "MopDockCleanManualTriggerCapability": SimpleToggleMcpTool,
-    "MopDockDryManualTriggerCapability": SimpleToggleMcpTool
+    "BasicControlCapability": "BasicControlMcpTool",
+    "FanSpeedControlCapability": "FanSpeedControlMcpTool",
+    "WaterUsageControlCapability": "WaterUsageControlMcpTool",
+    "OperationModeControlCapability": "OperationModeControlMcpTool",
+    "GoToLocationCapability": "GoToLocationMcpTool",
+    "ZoneCleaningCapability": "ZoneCleaningMcpTool",
+    "MapSegmentationCapability": "MapSegmentationMcpTool",
+    "LocateCapability": "LocateMcpTool",
+    "ManualControlCapability": "ManualControlMcpTool",
+    "HighResolutionManualControlCapability": "ManualControlMcpTool",
+    "CombinedVirtualRestrictionsCapability": "CombinedVirtualRestrictionsMcpTool",
+    "ConsumableMonitoringCapability": "ConsumableMonitoringMcpTool",
+    "CurrentStatisticsCapability": "CurrentStatisticsMcpTool",
+    "TotalStatisticsCapability": "TotalStatisticsMcpTool",
+    "CarpetModeControlCapability": "SimpleToggleMcpTool",
+    "ObstacleAvoidanceControlCapability": "SimpleToggleMcpTool",
+    "PetObstacleAvoidanceControlCapability": "SimpleToggleMcpTool",
+    "KeyLockCapability": "SimpleToggleMcpTool",
+    "CameraLightControlCapability": "SimpleToggleMcpTool",
+    "MopExtensionControlCapability": "SimpleToggleMcpTool",
+    "MopTwistControlCapability": "SimpleToggleMcpTool",
+    "CollisionAvoidantNavigationControlCapability": "SimpleToggleMcpTool",
+    "FloorMaterialDirectionAwareNavigationControlCapability": "SimpleToggleMcpTool",
+    "PersistentMapControlCapability": "SimpleToggleMcpTool",
+    "MopDockMopAutoDryingControlCapability": "SimpleToggleMcpTool",
+    "ObstacleImagesCapability": "SimpleToggleMcpTool",
+    "CarpetSensorModeControlCapability": "PresetSelectionMcpTool",
+    "MapSegmentMaterialControlCapability": "PresetSelectionMcpTool",
+    "MopExtensionFurnitureLegHandlingControlCapability": "PresetSelectionMcpTool",
+    "CleanRouteControlCapability": "PresetSelectionMcpTool",
+    "MapResetCapability": "MapResetMcpTool",
+    "MappingPassCapability": "MappingPassMcpTool",
+    "MapSnapshotCapability": "MapSnapshotMcpTool",
+    "MapSegmentRenameCapability": "MapSegmentRenameMcpTool",
+    "MapSegmentEditCapability": "MapSegmentEditMcpTool",
+    "PendingMapChangeHandlingCapability": "PendingMapChangeHandlingMcpTool",
+    "SpeakerVolumeControlCapability": "SpeakerVolumeControlMcpTool",
+    "VoicePackManagementCapability": "VoicePackManagementMcpTool",
+    "WifiConfigurationCapability": "WifiConfigurationMcpTool",
+    "WifiScanCapability": "WifiScanMcpTool",
+    "DoNotDisturbCapability": "DoNotDisturbMcpTool",
+    "QuirksCapability": "QuirksMcpTool",
+    "AutoEmptyDockManualTriggerCapability": "SimpleToggleMcpTool",
+    "MopDockCleanManualTriggerCapability": "SimpleToggleMcpTool",
+    "MopDockDryManualTriggerCapability": "SimpleToggleMcpTool",
+    "MopDockMopDryingTimeControlCapability": "PresetSelectionMcpTool",
+    "MopDockMopWashTemperatureControlCapability": "PresetSelectionMcpTool",
+    "AutoEmptyDockAutoEmptyDurationControlCapability": "PresetSelectionMcpTool",
+    "AutoEmptyDockAutoEmptyIntervalControlCapability": "PresetSelectionMcpTool",
+    "SpeakerTestCapability": "SpeakerTestMcpTool"
 };
 
 const TOGGLE_CAPABILITY_NAMES = {
@@ -104,64 +127,65 @@ const PRESET_CAPABILITY_NAMES = {
 };
 
 class McpCapabilityMapper {
-    /**
-     * @param {string} capabilityType
-     * @param {import("../core/capabilities/Capability")} capability
-     * @returns {object|null}
-     */
     static getToolDefinition(capabilityType, capability) {
-        const toolClass = CAPABILITY_TYPE_TO_MCP_TOOL_MAPPING[capabilityType];
+        const toolName = CAPABILITY_TYPE_TO_MCP_TOOL_MAPPING[capabilityType];
+
+        if (!toolName) {
+            return null;
+        }
+
+        const toolClass = loadToolModule(toolName);
 
         if (!toolClass) {
             return null;
         }
 
-        if (toolClass === SimpleToggleMcpTool) {
+        if (toolName === "SimpleToggleMcpTool") {
             const meta = TOGGLE_CAPABILITY_NAMES[capabilityType];
             if (!meta) {
                 return null;
             }
-            return SimpleToggleMcpTool.getDefinition(capabilityType, meta);
+            return toolClass.getDefinition(capabilityType, meta);
         }
 
-        if (toolClass === PresetSelectionMcpTool) {
+        if (toolName === "PresetSelectionMcpTool") {
             const meta = PRESET_CAPABILITY_NAMES[capabilityType];
             if (!meta) {
                 return null;
             }
-            return PresetSelectionMcpTool.getDefinition(capabilityType, capability, meta);
+            return toolClass.getDefinition(capabilityType, capability, meta);
         }
 
-        if (toolClass === ManualControlMcpTool) {
-            return ManualControlMcpTool.getDefinition(capabilityType, capability);
+        if (toolName === "ManualControlMcpTool") {
+            return toolClass.getDefinition(capabilityType, capability);
         }
 
         return toolClass.getDefinition(capability);
     }
 
-    /**
-     * @param {string} capabilityType
-     * @param {import("../core/capabilities/Capability")} capability
-     * @param {object} args
-     * @returns {Promise<object>}
-     */
     static async executeTool(capabilityType, capability, args) {
-        const toolClass = CAPABILITY_TYPE_TO_MCP_TOOL_MAPPING[capabilityType];
+        const toolName = CAPABILITY_TYPE_TO_MCP_TOOL_MAPPING[capabilityType];
 
-        if (!toolClass) {
+        if (!toolName) {
             throw new Error(`No MCP tool mapping for capability type: ${capabilityType}`);
         }
 
-        if (toolClass === SimpleToggleMcpTool) {
-            return SimpleToggleMcpTool.execute(capability, args);
+        const toolClass = loadToolModule(toolName);
+
+        if (!toolClass) {
+            throw new Error(`Could not load MCP tool module: ${toolName}`);
         }
 
-        if (toolClass === PresetSelectionMcpTool) {
-            return PresetSelectionMcpTool.execute(capability, args);
+        if (toolName === "SimpleToggleMcpTool") {
+            return toolClass.execute(capability, args);
         }
 
-        if (toolClass === ManualControlMcpTool) {
-            return ManualControlMcpTool.execute(capabilityType, capability, args);
+        if (toolName === "PresetSelectionMcpTool") {
+            return toolClass.execute(capability, args);
+        }
+
+        if (toolName === "ManualControlMcpTool") {
+            return toolClass.execute(capabilityType, capability, args);
         }
 
         return toolClass.execute(capability, args);
