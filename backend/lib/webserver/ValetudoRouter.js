@@ -142,6 +142,22 @@ class ValetudoRouter {
             res.sendStatus(200);
         });
 
+        this.router.get("/config/interfaces/mcp", (req, res) => {
+            res.json(this.config.get("mcp"));
+        });
+
+        this.router.put("/config/interfaces/mcp", this.validator, (req, res) => {
+            if (req.body && typeof req.body.enabled === "boolean" && typeof req.body.endpoint === "string") {
+                this.config.set("mcp", {
+                    enabled: req.body.enabled,
+                    endpoint: req.body.endpoint
+                });
+                res.sendStatus(200);
+            } else {
+                res.sendStatus(400);
+            }
+        });
+
         this.router.get("/config/interfaces/http/auth/basic", (req, res) => {
             res.json({...this.config.get("webserver").basicAuth, password: ""});
         });

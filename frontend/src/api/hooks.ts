@@ -148,6 +148,8 @@ import {
     fetchAutoEmptyDockAutoEmptyDuration,
     sendAutoEmptyDockAutoEmptyDuration,
     fetchAutoEmptyDockAutoEmptyDurationControlProperties,
+    fetchMCPConfiguration,
+    sendMCPConfiguration,
 } from "./client";
 import {
     PresetSelectionState,
@@ -173,6 +175,7 @@ import {
     MapSegmentEditSplitRequestParameters,
     MapSegmentMaterialControlRequestParameters,
     MapSegmentRenameRequestParameters,
+    MCPConfiguration,
     MopDockMopDryingDuration,
     MopDockMopWashTemperature,
     MQTTConfiguration,
@@ -266,6 +269,7 @@ enum QueryKey {
     MopDockMopDryingTimeControlProperties = "mop_dock_mop_drying_time_control_properties",
     AutoEmptyDockAutoEmptyDurationControl = "auto_empty_dock_auto_empty_duration_control",
     AutoEmptyDockAutoEmptyDurationControlProperties = "auto_empty_dock_auto_empty_duration_control_properties",
+    MCPConfiguration = "mcp_configuration",
 }
 
 const useOnCommandError = (capability: Capability | string): ((error: unknown) => void) => {
@@ -1819,6 +1823,25 @@ export const useAutoEmptyDockAutoEmptyDurationControlPropertiesQuery = () => {
         queryFn: fetchAutoEmptyDockAutoEmptyDurationControlProperties,
 
         staleTime: Infinity
+    });
+};
+
+export const useMCPConfigurationQuery = () => {
+    return useQuery({
+        queryKey: [QueryKey.MCPConfiguration],
+        queryFn: fetchMCPConfiguration,
+
+        staleTime: Infinity,
+    });
+};
+
+export const useMCPConfigurationMutation = () => {
+    return useValetudoFetchingMutation({
+        queryKey: [QueryKey.MCPConfiguration],
+        mutationFn: (mcpConfiguration: MCPConfiguration) => {
+            return sendMCPConfiguration(mcpConfiguration).then(fetchMCPConfiguration);
+        },
+        onError: useOnSettingsChangeError("MCP"),
     });
 };
 

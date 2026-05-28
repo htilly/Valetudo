@@ -2,7 +2,7 @@ import {useCapabilitiesSupported} from "../../CapabilitiesProvider";
 import {Capability} from "../../api";
 import React from "react";
 import {LinkListMenuItem} from "../../components/list_menu/LinkListMenuItem";
-import {MQTTIcon} from "../../components/CustomIcons";
+import {MCPIcon, MQTTIcon} from "../../components/CustomIcons";
 import {
     AccessTime as NTPIcon,
     VpnKey as AuthIcon,
@@ -44,6 +44,16 @@ const ConnectivityOptions = (): React.ReactElement => {
                 primaryLabel="MQTT Connectivity"
                 secondaryLabel="Connect Valetudo to your MQTT Broker"
                 icon={<MQTTIcon/>}
+            />
+        );
+
+        items.push(
+            <LinkListMenuItem
+                key="mcpConnectivity"
+                url="/options/connectivity/mcp"
+                primaryLabel="MCP Connectivity"
+                secondaryLabel="Allow AI clients to control the robot via Model Context Protocol"
+                icon={<MCPIcon/>}
             />
         );
 

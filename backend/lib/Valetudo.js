@@ -2,6 +2,7 @@ const Configuration = require("./Configuration");
 const env = require("./res/env");
 const fs = require("fs");
 const Logger = require("./Logger");
+const McpController = require("./mcp/McpController");
 const MqttController = require("./mqtt/MqttController");
 const NTPClient = require("./NTPClient");
 const os = require("os");
@@ -83,6 +84,12 @@ class Valetudo {
             robot: this.robot
         });
 
+        this.mcpController = new McpController({
+            config: this.config,
+            robot: this.robot,
+            valetudoEventStore: this.valetudoEventStore
+        });
+
         this.mqttController = new MqttController({
             config: this.config,
             robot: this.robot,
@@ -104,6 +111,7 @@ class Valetudo {
 
         this.webserver = new Webserver({
             config: this.config,
+            mcpController: this.mcpController,
             phoenixManager: this.phoenixManager,
             robot: this.robot,
             mqttController: this.mqttController,
@@ -251,6 +259,10 @@ class Valetudo {
         await this.scheduler.shutdown();
         if (this.mqttController) {
             await this.mqttController.shutdown();
+        }
+
+        if (this.mcpController) {
+            await this.mcpController.shutdown();
         }
 
         await this.webserver.shutdown();

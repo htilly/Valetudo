@@ -9,6 +9,7 @@ import WifiConnectivityPage from "./connectivity/WifiConnectivityPage";
 import NetworkAdvertisementSettingsPage from "./connectivity/NetworkAdvertisementSettingsPage";
 import React from "react";
 import MQTTConnectivityPage from "./connectivity/MQTTConnectivityPage";
+import MCPConnectivityPage from "./connectivity/MCPConnectivityPage";
 
 const OptionsRouter = (): React.ReactElement => {
     const [
@@ -21,6 +22,7 @@ const OptionsRouter = (): React.ReactElement => {
         <Routes>
             <Route path={""} element={<ConnectivityOptions />} />
             <Route path={"auth"} element={<AuthSettingsPage />} />
+            <Route path={"mcp"} element={<MCPConnectivityPage />} />
             <Route path={"mqtt"} element={<MQTTConnectivityPage />} />
             <Route path={"networkadvertisement"} element={<NetworkAdvertisementSettingsPage />} />
             <Route path={"ntp"} element={<NTPConnectivityPage />} />

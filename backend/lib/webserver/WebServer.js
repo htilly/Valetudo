@@ -17,6 +17,7 @@ const ValetudoRouter = require("./ValetudoRouter");
 
 
 const fs = require("fs");
+const McpRouter = require("./McpRouter");
 const MQTTRouter = require("./MQTTRouter");
 const NetworkAdvertisementManagerRouter = require("./NetworkAdvertisementManagerRouter");
 const NTPClientRouter = require("./NTPClientRouter");
@@ -31,6 +32,7 @@ class WebServer {
     /**
      * @param {object} options
      * @param {import("../core/ValetudoRobot")} options.robot
+     * @param {import("../mcp/McpController")} options.mcpController
      * @param {import("../mqtt/MqttController")} options.mqttController
      * @param {import("../NetworkAdvertisementManager")} options.networkAdvertisementManager
      * @param {import("../NTPClient")} options.ntpClient
@@ -46,6 +48,7 @@ class WebServer {
 
         this.robot = options.robot;
         this.config = options.config;
+        this.mcpController = options.mcpController;
         this.phoenixManager = options.phoenixManager;
         this.valetudoHelper = options.valetudoHelper;
 
@@ -130,6 +133,21 @@ class WebServer {
         this.app.use("/api/v2/valetudo/", this.valetudoRouter.getRouter());
 
         this.app.use("/api/v2/mqtt/", new MQTTRouter({config: this.config, mqttController: options.mqttController, validator: this.validator}).getRouter());
+
+        this.app.use("/api/v2/mcp/", new McpRouter({config: this.config, mcpController: this.mcpController, validator: this.validator}).getRouter());
+
+        if (this.mcpController) {
+            const mcpEndpoint = this.mcpController.getEndpoint();
+            this.app.post(mcpEndpoint, (req, res) => {
+                this.mcpController.handleRequest(req, res);
+            });
+            this.app.get(mcpEndpoint, (req, res) => {
+                this.mcpController.handleGetRequest(req, res);
+            });
+            this.app.delete(mcpEndpoint, (req, res) => {
+                this.mcpController.handleDeleteRequest(req, res);
+            });
+        }
 
         this.app.use("/api/v2/networkadvertisement/", new NetworkAdvertisementManagerRouter({config: this.config, networkAdvertisementManager: options.networkAdvertisementManager, validator: this.validator}).getRouter());
 

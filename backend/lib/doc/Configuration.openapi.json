@@ -47,6 +47,9 @@
           "mqtt": {
             "$ref": "#/components/schemas/MqttConfigDTO"
           },
+          "mcp": {
+            "$ref": "#/components/schemas/McpConfigDTO"
+          },
           "ntpClient": {
             "$ref": "#/components/schemas/NTPClientConfigDTO"
           },
@@ -286,6 +289,24 @@
                 "CarpetSensorModeControlCapability"
               ]
             }
+          }
+        }
+      },
+      "McpConfigDTO": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "enabled"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether the MCP (Model Context Protocol) server is enabled. Exposes robot capabilities as MCP tools and robot state as MCP resources."
+          },
+          "endpoint": {
+            "type": "string",
+            "pattern": "^/[a-zA-Z0-9/_-]+$",
+            "description": "The HTTP endpoint path for the MCP Streamable HTTP transport. Defaults to /mcp"
           }
         }
       },

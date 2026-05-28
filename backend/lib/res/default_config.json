@@ -55,6 +55,10 @@
         },
         "optionalExposedCapabilities": []
     },
+    "mcp": {
+        "enabled": false,
+        "endpoint": "/mcp"
+    },
     "ntpClient": {
         "enabled": true,
         "server": "valetudo.pool.ntp.org",

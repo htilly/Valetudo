@@ -267,6 +267,11 @@ export interface TimerProperties {
     supportedPreActions: Array<ValetudoTimerPreActionType>
 }
 
+export interface MCPConfiguration {
+    enabled: boolean;
+    endpoint: string;
+}
+
 export interface MQTTConfiguration {
     enabled: boolean;
     connection: {

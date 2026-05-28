@@ -39,6 +39,7 @@ import {
     MopDockMopWashTemperature,
     MopDockMopWashTemperaturePayload,
     MopDockMopWashTemperatureProperties,
+    MCPConfiguration,
     MQTTConfiguration,
     MQTTProperties,
     MQTTStatus,
@@ -533,6 +534,24 @@ export const fetchSystemRuntimeInfo = async (): Promise<SystemRuntimeInfo> => {
         .get<SystemRuntimeInfo>("/system/runtime/info")
         .then(({data}) => {
             return data;
+        });
+};
+
+export const fetchMCPConfiguration = async (): Promise<MCPConfiguration> => {
+    return valetudoAPI
+        .get<MCPConfiguration>("/valetudo/config/interfaces/mcp")
+        .then(({data}) => {
+            return data;
+        });
+};
+
+export const sendMCPConfiguration = async (mcpConfiguration: MCPConfiguration): Promise<void> => {
+    return valetudoAPI
+        .put("/valetudo/config/interfaces/mcp", mcpConfiguration)
+        .then(({status}) => {
+            if (status !== 200) {
+                throw new Error("Could not update MCP configuration");
+            }
         });
 };
 
