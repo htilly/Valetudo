@@ -14,6 +14,10 @@ function loadToolModule(name) {
         case "CurrentStatisticsMcpTool": mod = require("./tools/CurrentStatisticsMcpTool"); break;
         case "DoNotDisturbMcpTool": mod = require("./tools/DoNotDisturbMcpTool"); break;
         case "FanSpeedControlMcpTool": mod = require("./tools/FanSpeedControlMcpTool"); break;
+        case "GetRobotCapabilitiesMcpTool": mod = require("./tools/GetRobotCapabilitiesMcpTool"); break;
+        case "GetRobotMapMcpTool": mod = require("./tools/GetRobotMapMcpTool"); break;
+        case "GetRobotPropertiesMcpTool": mod = require("./tools/GetRobotPropertiesMcpTool"); break;
+        case "GetRobotStateMcpTool": mod = require("./tools/GetRobotStateMcpTool"); break;
         case "GoToLocationMcpTool": mod = require("./tools/GoToLocationMcpTool"); break;
         case "LocateMcpTool": mod = require("./tools/LocateMcpTool"); break;
         case "ManualControlMcpTool": mod = require("./tools/ManualControlMcpTool"); break;
@@ -189,6 +193,56 @@ class McpCapabilityMapper {
         }
 
         return toolClass.execute(capability, args);
+    }
+
+    static getQueryToolDefinitions() {
+        const queryTools = [
+            {toolName: "GetRobotStateMcpTool", capabilityType: "__query_robot_state"},
+            {toolName: "GetRobotMapMcpTool", capabilityType: "__query_robot_map"},
+            {toolName: "GetRobotCapabilitiesMcpTool", capabilityType: "__query_robot_capabilities"},
+            {toolName: "GetRobotPropertiesMcpTool", capabilityType: "__query_robot_properties"}
+        ];
+
+        const results = [];
+
+        queryTools.forEach(qt => {
+            const toolClass = loadToolModule(qt.toolName);
+
+            if (toolClass) {
+                results.push({
+                    name: toolClass.getDefinition().name,
+                    description: toolClass.getDefinition().description,
+                    inputSchema: toolClass.getDefinition().inputSchema,
+                    capabilityType: qt.capabilityType,
+                    capability: null
+                });
+            }
+        });
+
+        return results;
+    }
+
+    static async executeQueryTool(capabilityType, args, options) {
+        const queryMapping = {
+            "__query_robot_state": "GetRobotStateMcpTool",
+            "__query_robot_map": "GetRobotMapMcpTool",
+            "__query_robot_capabilities": "GetRobotCapabilitiesMcpTool",
+            "__query_robot_properties": "GetRobotPropertiesMcpTool"
+        };
+
+        const toolName = queryMapping[capabilityType];
+
+        if (!toolName) {
+            throw new Error(`No MCP query tool mapping for: ${capabilityType}`);
+        }
+
+        const toolClass = loadToolModule(toolName);
+
+        if (!toolClass) {
+            throw new Error(`Could not load MCP query tool module: ${toolName}`);
+        }
+
+        return toolClass.execute(null, args, options);
     }
 }
 

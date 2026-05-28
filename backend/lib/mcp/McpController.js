@@ -111,6 +111,11 @@ class McpController {
             }
         });
 
+        const queryTools = McpCapabilityMapper.getQueryToolDefinitions();
+        queryTools.forEach(qt => {
+            this.tools.push(qt);
+        });
+
         this.resources = [
             new RobotStateResource({robot: this.robot}),
             new RobotMapResource({robot: this.robot}),
@@ -343,7 +348,17 @@ class McpController {
         }
 
         try {
-            const result = await McpCapabilityMapper.executeTool(tool.capabilityType, tool.capability, args);
+            let result;
+
+            if (tool.capabilityType.startsWith("__query_")) {
+                result = await McpCapabilityMapper.executeQueryTool(tool.capabilityType, args, {
+                    robot: this.robot,
+                    valetudoEventStore: this.valetudoEventStore
+                });
+            } else {
+                result = await McpCapabilityMapper.executeTool(tool.capabilityType, tool.capability, args);
+            }
+
             return this.makeResponse(id, result);
         } catch (err) {
             return this.makeResponse(id, {

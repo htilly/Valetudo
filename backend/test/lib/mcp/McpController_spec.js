@@ -389,5 +389,87 @@ describe("McpController", function () {
 
             should(controller.getStatus().stats.requests.total).equal(1);
         });
+
+        it("should include query tools in tools/list", async function () {
+            const res = await dispatch({
+                jsonrpc: "2.0",
+                id: 20,
+                method: "tools/list",
+                params: {}
+            });
+
+            const toolNames = res._body.result.tools.map(t => t.name);
+
+            should(toolNames).containEql("get_robot_state");
+            should(toolNames).containEql("get_robot_map");
+            should(toolNames).containEql("get_robot_capabilities");
+            should(toolNames).containEql("get_robot_properties");
+        });
+
+        it("should execute get_robot_state query tool", async function () {
+            const res = await dispatch({
+                jsonrpc: "2.0",
+                id: 21,
+                method: "tools/call",
+                params: {
+                    name: "get_robot_state",
+                    arguments: {}
+                }
+            });
+
+            should(res._body.result.content[0].type).equal("text");
+            const parsed = JSON.parse(res._body.result.content[0].text);
+            should(parsed).be.an.Object();
+        });
+
+        it("should execute get_robot_map query tool", async function () {
+            const res = await dispatch({
+                jsonrpc: "2.0",
+                id: 22,
+                method: "tools/call",
+                params: {
+                    name: "get_robot_map",
+                    arguments: {}
+                }
+            });
+
+            should(res._body.result.content[0].type).equal("text");
+            const parsed = JSON.parse(res._body.result.content[0].text);
+            should(parsed.size).be.an.Object();
+            should(parsed.pixelSize).be.a.Number();
+        });
+
+        it("should execute get_robot_capabilities query tool", async function () {
+            const res = await dispatch({
+                jsonrpc: "2.0",
+                id: 23,
+                method: "tools/call",
+                params: {
+                    name: "get_robot_capabilities",
+                    arguments: {}
+                }
+            });
+
+            should(res._body.result.content[0].type).equal("text");
+            const parsed = JSON.parse(res._body.result.content[0].text);
+            should(parsed.BasicControlCapability).be.an.Object();
+        });
+
+        it("should execute get_robot_properties query tool", async function () {
+            const res = await dispatch({
+                jsonrpc: "2.0",
+                id: 24,
+                method: "tools/call",
+                params: {
+                    name: "get_robot_properties",
+                    arguments: {}
+                }
+            });
+
+            should(res._body.result.content[0].type).equal("text");
+            const parsed = JSON.parse(res._body.result.content[0].text);
+            should(parsed.manufacturer).equal("TestManufacturer");
+            should(parsed.modelName).equal("TestModel");
+        });
     });
 });
