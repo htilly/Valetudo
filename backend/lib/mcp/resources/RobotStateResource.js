@@ -45,7 +45,7 @@ class RobotStateResource {
             };
         }
 
-        const attachmentAttrs = state.getAllMatchingAttributes({
+        const attachmentAttrs = state.getMatchingAttributes({
             attributeClass: AttachmentStateAttribute.name
         });
         if (attachmentAttrs && attachmentAttrs.length > 0) {
